@@ -47,7 +47,7 @@ def compute_tf(word_list):
     return tf_d
 
 def compute_idf(word_list,count):
-    Dvalinfo = count
+    Dval = count
     bow=set()
 
     for i in range(count):
@@ -132,12 +132,13 @@ def info():
 
         es.index(index='knu',doc_type ='student',id=count,body=info)
         count+=1
+        es.indices.refresh(index='knu')
 
         query={"query":{"bool":{"must":[{"match":{"_type":'student'}}]}}}
 
         result = es.search(index='knu',body=query)
-        result = result['hits']
-        return render_template('final.html',value=result,cnt=count)
+        result = result['hits']['hits']
+        return render_template('final.html',value=result)
 
 
 @app.route('/analyze', methods=['GET','POST'])
@@ -196,15 +197,10 @@ def info2():
         url2 = request.form['hid']
         query={"query":{"bool":{"must":[{"match":{"url":url2}}]}}}
         docs=es.search(index='knu',body=query)
-        
-        if docs['hits']['total']['value']>0:
-
-            for doc in docs['hits']['hits']:
-                find_list=doc['_source']['word']
-                break
+        find_list=docs['hits']['hits'][0]['_source']['word']
 
 
-        ''' 
+         
         idf_d = compute_idf(word_list,count)
         
         tf_d = compute_tf(find_list)
@@ -212,13 +208,16 @@ def info2():
         for word,tfval in tf_d.items():
             tidf_dic[word]=tfval*idf_d[word]
 
-         
+        word_list = sorted(tidf_dic.items(),key = lambda x:x[1],reverse=True)
+
+
+        '''
         if request.form['Cosine']=='cosine':
             return render_template('analyze.html')
         
         elif request.form['tf-idf']=='tfidf':
         '''
-        return render_template('analyze.html',value2=find_list)
+        return render_template('analyze.html',value2=word_list[:10])
 
 
 

@@ -5,8 +5,9 @@
         <body>
                 <div>
                         <p>
-			hi {{value2}}
-                 
+			{% for val in value2 %}
+			<li>{{val}}</li></br>
+			{% endfor %}
                         </p>
                 </div>
         </body>
