@@ -47,10 +47,10 @@ def compute_tf(word_list):
     return tf_d
 
 def compute_idf(word_list,count):
-    Dval = count
+    Dvalinfo = count
     bow=set()
 
-    for i in range(0,count):
+    for i in range(count):
         tokenized = word_list[i]
         for tok in tokenized:
             bow.add(tok)
@@ -123,24 +123,21 @@ def info():
                 "url":url1,
                 "word":list1,
                 "numWord":len(list1),
-                "frequency":list2,
+               #"frequency":list2,
                 "time":clock,
                 "dict":word_count
 
         }
-        info_list=[]
-        info_list.append(info)
         
-        for val in info_list:
-            result.append(val['url'])
-            result.append(val['numWord'])
-            result.append(val['time'])
 
-        
-        res = es.index(index='knu',doc_type ='student',id=count,body=info)
+        es.index(index='knu',doc_type ='student',id=count,body=info)
         count+=1
 
-        return render_template('final.html',value=result)
+        query={"query":{"bool":{"must":[{"match":{"_type":'student'}}]}}}
+
+        result = es.search(index='knu',body=query)
+        result = result['hits']
+        return render_template('final.html',value=result,cnt=count)
 
 
 @app.route('/analyze', methods=['GET','POST'])
@@ -156,10 +153,12 @@ def info2():
 
     numWord=[]
 
+
     tf_d={}
     idf_d={}
     tidf_dic={}
     if request.method=='POST':
+        
 
         for i in range(count):
             query={"query":{"bool":{"must":[{"match":{"_id":i}}]}}}
@@ -171,7 +170,7 @@ def info2():
                     word_list.append(doc['_source']['word'])
                     url_list.append(doc['_source']['url'])
                     numWord.append(doc['_source']['numWord'])
-        
+        '''
         
         for i in range(count):
             vec_list.append(make_vector(word_list[i],word_dict))
@@ -190,23 +189,36 @@ def info2():
             for t in cos_res:
                 if cos_res2[i]== t:
                     url_list2[i]=cos_res.index(t)   
-
+        '''
         #tf-idf
-        idf_d = compute_idf(word_list,count)
+        find_list=[]
 
-        for i in range(0,count):
-            tf_d = compute_tf(word_list[i])
+        url2 = request.form['hid']
+        query={"query":{"bool":{"must":[{"match":{"url":url2}}]}}}
+        docs=es.search(index='knu',body=query)
+        
+        if docs['hits']['total']['value']>0:
+
+            for doc in docs['hits']['hits']:
+                find_list=doc['_source']['word']
+                break
+
+
+        ''' 
+        idf_d = compute_idf(word_list,count)
+        
+        tf_d = compute_tf(find_list)
 
         for word,tfval in tf_d.items():
             tidf_dic[word]=tfval*idf_d[word]
 
-
+         
         if request.form['Cosine']=='cosine':
-            return render_template('analyze.html',value2=url_list2)
-
+            return render_template('analyze.html')
+        
         elif request.form['tf-idf']=='tfidf':
-            return render_template('analyze.html',value2=tidf_dic)
-
+        '''
+        return render_template('analyze.html',value2=find_list)
 
 
 
