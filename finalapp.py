@@ -153,8 +153,9 @@ def info2():
     cos_res2=[]
 
     numWord=[]
+    find_list=[]
 
-
+    dict_simil={}
     tf_d={}
     idf_d={}
     tidf_dic={}
@@ -171,68 +172,38 @@ def info2():
                     word_list.append(doc['_source']['word'])
                     url_list.append(doc['_source']['url'])
                     numWord.append(doc['_source']['numWord'])
-        '''
         
-        for i in range(count):
-            vec_list.append(make_vector(word_list[i],word_dict))
 
-        url=url_list[count-1]
-        v1=vec_list[count-1]
-        
-        for i in range(count):
-            dotpro=numpy.dot(v1,vec_list[i])
-            cossimil=dotpro/(numpy.linalg.norm(v1)*numpy.linalg.norm(vec_list[i]))
-            cos_res[i] = cossimil
-
-        cos_res2=sorted(cos_res,reverse=True)
-
-        for i in range(1,4):
-            for t in cos_res:
-                if cos_res2[i]== t:
-                    url_list2[i]=cos_res.index(t)   
-        '''
-        #tf-idf
-        find_list=[]
 
         url2 = request.form['hid']
         query={"query":{"bool":{"must":[{"match":{"url":url2}}]}}}
         docs=es.search(index='knu',body=query)
         find_list=docs['hits']['hits'][0]['_source']['word']
 
-
-         
-        idf_d = compute_idf(word_list,count)
-        
-        tf_d = compute_tf(find_list)
-
-        for word,tfval in tf_d.items():
-            tidf_dic[word]=tfval*idf_d[word]
-
-        word_list = sorted(tidf_dic.items(),key = lambda x:x[1],reverse=True)
-
-
-        '''
         if request.form['Cosine']=='cosine':
-            return render_template('analyze.html')
+
+            for i in range(count):
+                vec_list.append(make_vector(word_list[i],word_dict))
+
+            v1=make_vector(find_list,word_dict)
+       
+            for i in range(count):
+                dotpro=numpy.dot(v1,vec_list[i])
+                cossimil=dotpro/(numpy.linalg.norm(v1)*numpy.linalg.norm(vec_list[i]))
+                cos_res.append(cossimil)
+                dict_simil[url_list[i]]=cossimil
+
+            cos_list = sorted(dict_simil.items(),key = lambda x:x[1],reverse=True)
+            return render_template('analyze.html',value2=cos_list[1:])
         
+        #tf-idf
         elif request.form['tf-idf']=='tfidf':
-        '''
-        return render_template('analyze.html',value2=word_list[:10])
 
+            idf_d = compute_idf(word_list,count)
+            tf_d = compute_tf(find_list)
 
+            for word,tfval in tf_d.items():
+                tidf_dic[word]=tfval*idf_d[word]
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+            word_list = sorted(tidf_dic.items(),key = lambda x:x[1],reverse=True)
+            return render_template('analyze.html',value2=word_list[:10])
