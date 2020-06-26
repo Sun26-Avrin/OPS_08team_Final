@@ -207,3 +207,11 @@ def info2():
 
             word_list = sorted(tidf_dic.items(),key = lambda x:x[1],reverse=True)
             return render_template('analyze.html',value2=word_list[:10])
+
+
+
+
+
+if __name__ == '__main__' :
+	app.run(debug=True)
+
