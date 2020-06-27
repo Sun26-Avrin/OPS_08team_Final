@@ -83,29 +83,23 @@ def info():
     error = None
     if request.form['submit'] == 'oneUrl':
         url1 = request.form['name']
+        page = requests.get(url1)
+        soup = BeautifulSoup(page.content,'html.parser')
 
-        req = requests.get(url1)
-        html = req.text
-        soup = BeautifulSoup(html,'html.parser')
-        my_para = soup.select('body > div')
-        
-
-        for para in my_para:
-            content = para.getText().split()
-
-            for word in content:
-                symbols = """!@#$%%^&*()_-+={[]}|/\;:"'.,<>?`"""
-                for i in range(len((symbols))):
-                    word = word.replace(symbols[i],'')
-                if len(word)> 0:
-                    output_list.append(word)
+        content = soup.get_text().split()  
+        for word in content:
+            symbols = """!@#$%%^&*()_-+={[]}|/\;:"'.,<>?`"""
+            for i in range(len((symbols))):
+                word = word.replace(symbols[i],'')
+            if len(word)> 0:
+                output_list.append(word)
             
             
-            for word in output_list:
-                if word in word_count:
-                    word_count[word]+=1
-                else:
-                    word_count[word]=1
+        for word in output_list:
+            if word in word_count:
+                word_count[word]+=1
+            else:
+                word_count[word]=1
 
 
         clock = time.time()-start
@@ -189,7 +183,7 @@ def info2():
                 dict_simil[url_list[i]]=cossimil
 
             cos_list = sorted(dict_simil.items(),key = lambda x:x[1],reverse=True)
-            return render_template('analyze.html',value2=cos_list[1:3])
+            return render_template('analyze.html',value2=cos_list[1:4])
                 
         #tf-idf
         if request.form['name']=='tfidf':
