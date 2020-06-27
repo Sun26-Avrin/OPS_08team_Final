@@ -20,7 +20,8 @@
         </nav>
         
         <div class="jumbotron">
-            <div class="container"><h1 class="display-3">Welcome Here!</h1></div>
+            <div class="container" ><h1 class="display-3" style="text-align:center;">
+                Welcome Here!</h1></div>
         </div>
         
         
@@ -98,12 +99,16 @@
                     <div style="clear:both;float:left;width:100%;">
                         <form style="float:right;" action="/tf_idf" method="post">
                             <input type="hidden" name ="tf_url" value={{val['_source']['url']}}>
-                            <input type="submit" value="TF-IDF" class="btn btn-warning btn-sm float-right" style="width:100px;margin:5px;">
+                            <input type="submit" value="TF-IDF" class="btn btn-warning btn-sm float-right" style="width:100px;margin:5px;"
+                                formtarget="_blank"
+                                >
                         </form>
                         <form action = "/cos" name ="frm" method = "POST"
                             style="float:right;">
                             <input type = 'hidden' name='cos_url' value={{val['_source']['url']}}>
-                            <input type = 'submit' name='Cosine' value='cosine' class="btn btn-warning btn-sm float-right" style="width:100px;margin:5px;">
+                            <input type = 'submit' name='Cosine' value='cosine' class="btn btn-warning btn-sm float-right" style="width:100px;margin:5px;"
+                                formtarget="_blank"
+                                >
                         </form>
                     </div>
                 </div>
@@ -142,29 +147,15 @@
         <br>
         
         
-        <!-- TF-IDF Top 10 Start-->
-        
-        <p/>tf-idf 영역
-        <p/>{{line}}
-        <p/>{{url}}
-        <p/>{{type2}}
-        
-        <p/>{{doc}}
-        <p/>{{top_10}}
         
         
-        <!-- Cosine Start-->
-        <p/>cos 영역
-        <p/>{{cos}}
         
-        <p/>cos_url : {{f_url}}
-        <p/>{{list_len}}
-        <p/>top3 : {{top_3}}
-        {% for i,j in top_3%}
-        <p/>{{i}}
-        <p/>{{j}}
-        {% endfor %}
-        
+        <footer class="container" style="text-align:right;" >
+            <p/>&copy; OPS_Programming Team-8
+            <li/>2012083011 유희선
+            <li/>조승희
+            <li/>2017110553 김경현
+        </footer>
     </body>
 
 

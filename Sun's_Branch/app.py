@@ -202,14 +202,14 @@ def tf_idf():
 
 	# 여기서부터 TF-IDF 계산
 	#doc = []     #TF-IDF
-	top_10 =[]    
+	top_10 =[]   
 
 	tf_v1 = TfidfVectorizer(stop_words='english') #sublinear_tf=True
 	tf_array=tf_v1.fit_transform(texts).toarray()
 	features=sorted(tf_v1.vocabulary_.items())
 	
 	# 단일문서 TF-IDF vector (해당 URL)
-	f_url = 'http://attic.apache.org/'
+	f_url = request.form['tf_url']
 	d_idx = url_list.index(f_url)
 	seq={} #매핑
 	for idx in range(len(tf_array[d_idx])) :
@@ -219,6 +219,7 @@ def tf_idf():
 	
 	#Vocab 추출
 	for i in range(10) :
+		#top_10[features[s_dict[i][0]][0]]=1
 		top_10.append(features[s_dict[i][0]][0])
 
 	'''
@@ -244,7 +245,7 @@ def tf_idf():
 	value=res['hits']['hits']
 	
 
-	return render_template('index.html', value=value,top_10=top_10)
+	return render_template('tf_idf.html', top_10=top_10, f_url=f_url )
 	
 
 
@@ -303,7 +304,7 @@ def cos():
 	# 문서 추출
 	cos_sorted = sorted(cos_dic.items(),key=op.itemgetter(1),reverse=True)
 	# top3
-	top_3.append(cos_sorted[0])
+	#top_3.append(cos_sorted[0])
 	top_3.append(cos_sorted[1])
 	top_3.append(cos_sorted[2])
 	top_3.append(cos_sorted[3])
@@ -319,7 +320,7 @@ def cos():
 	value=res['hits']['hits']
 	
 
-	return render_template('index.html', value=value, cos=cos, list_len=list_len, f_url=f_url,top_3=top_3)
+	return render_template('cos.html', cos=cos, f_url=f_url, top_3=top_3)
 
 
 		
