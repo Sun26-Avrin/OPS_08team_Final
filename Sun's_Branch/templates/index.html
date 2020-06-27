@@ -29,8 +29,7 @@
         
         
             <div class="row" align="center">
-                <div class="col-md-2">
-                </div>
+                
                 
                 <div class="col-md-4" style="margin:30px; border:1px solid;">
                     <div class="col-md-2">
@@ -59,13 +58,49 @@
                     <input type="button" value="Submit" class="btn btn-primary btn-sm" onclick="document.fileload.submit();">
                     
                 </div>
-                <div class="col-md-2">
+                <div class="col-md-4">
                 </div>
             </div>
+        <!-- Create List of URL-->
+        <div style="overflow:scroll; width:0 auto; height:300px;">
+            <!-- Start for-->
+            {% for val in value %}
+            <div class="container col-8 alert alert-info" style="float:left;margin-left:200px;" >
+                <div style="clear:both;">
+                    <div style="float:left;width:100%;">
+                        <div style="width:50%; float:left;">
+                            <p/>Site URL :
+                            <p/>Number Of Vocabularies :
+                            <p/>Processing Time :
+                        
+                        </div>
+                        
+                        <div style="width:50%; float:left;">
+                            <p/>{{val['_source']['url']}}
+                            <p/>{{val['_source']['total_words']}}
+                            <p/>{{val['_source']['processing_time']}}
+                        </div>
+                    </div>
+                    
+                    <div style="clear:both;float:left;width:100%;">
+                        <form style="float:right;" action="/tf_idf" method="post">
+                            <input type="hidden" value={{val['_source']['url']}}>
+                            <input type="submit" value="TF-IDF" class="btn btn-warning btn-sm float-right" style="width:100px;margin:5px;">
+                        </form>
+                        <form action = "/analyze" name ="frm" method = "POST"
+                            style="float:right;">
+                            <input type = 'hidden' name='hid' value={{val['_source']['url']}}>
+                            <input type = 'submit' name='Cosine' value='cosine' class="btn btn-warning btn-sm float-right" style="width:100px;margin:5px;">
+                        </form>
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+            <!-- End for-->
+        </div>
+            <!-- Finish List of URL -->
         
-        
-        
-        
+        <div style="clear:both;"></div>
         
         <p/>{{res}}
         <br>
@@ -100,6 +135,7 @@
         <p/>{{type2}}
         <p/>{{list_len}}
         <p/>{{doc}}
+        <p/>{{top_10}}
         <form action="/test2" name="frm2" method="post">
             <input type="hidden" name="hidden" value="hidden_value">
             <input type="submit" name="btn1" value="1234" >

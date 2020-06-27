@@ -12,13 +12,25 @@ import requests
 from elasticsearch import Elasticsearch
 import time
 
-from nltk.tokenize import word_tokenize as word_tk
+
+from nltk.corpus import stopwords
+import nltk
+#nltk.download('stopwords')
 
 app = Flask(__name__)
 id=0
 
+#누적 url
+url_list=[]
+
 #Connect
 es = Elasticsearch([{'host':"127.0.0.1",'port':"9200"}],timeout=30)
+#과제 채점 상황때 생길 오류 방지하기 위하여
+if es.indices.exists(index="ops_project"):
+	pass
+else :
+	es.indices.create(index="ops_project")
+es.indices.delete(index='ops_project')  
 
 @app.route('/')
 
@@ -32,18 +44,20 @@ def index():
 def insert():
 	#Calculate Time & Set Result
 	global id
+	global url_list
 	SOF="" #삽입 성공 여부
 	s_time=time.time() #시간 시작
 	total_words=0 #전체 단어수
 	url = request.form['single']
+	url_list.append(url)
 	page = requests.get(url)
 	soup = BeautifulSoup(page.content,'html.parser')
 	text = soup.get_text().replace("\n"," ")
 	
 	p_time=time.time()-s_time #크롤링 끝	
 
-	#Calculate Total_Words (Including Stop Words)
-	total_words=len(text.split())
+	#Calculate Total_Words (Not Including Stop Words)
+	total_words=len([i for i in text.split() if i not in stopwords.words('english')]) 
 
 	#Create Index 
 	if es.indices.exists(index="ops_project"):
@@ -52,7 +66,7 @@ def insert():
 		es.indices.create(index="ops_project")
 	
 	#Doc & Check
-	doc={'url':url, 'text':text, 'processing_time':p_time}
+	doc={'url':url,'total_words': total_words, 'processing_time':p_time,'text':text }
 	es.indices.refresh(index="ops_project") #refresh 해줘야 바로 검색가능
 	res=[]
 	res=es.search(index="ops_project", body= {"query":{"match":{"url":url}}} )
@@ -63,13 +77,15 @@ def insert():
 		id+=1
 		SOF="Successfully Inserted!"
 		
-		return render_template('index.html', p_time=p_time, total_words=total_words,SOF=SOF, url=url)
+		
 	else :
 		SOF="already Exists..!"
-		es.indices.refresh(index="ops_project") #refresh
-		res1=res['hits']['hits'][0]['_source']['url']
+	
+	es.indices.refresh(index="ops_project")
+	res=es.search(index="ops_project", body= {"query":{"match_all":{}}} )
+	value=res['hits']['hits']
 
-		return render_template('index.html',p_time=p_time, total_words=total_words, SOF=SOF, url=url)
+	return render_template('index.html',value=value, SOF=SOF, )
 
 # 파일저장 및 데이터송신
 @app.route('/file',methods= ['POST','GET'])
@@ -94,6 +110,7 @@ def file():
 def file_processing():
 	if request.method == 'POST':
 		global id
+		global url_list
 		url = []
 		texts = []
 		navi_list=[] # 한번에 출력하기위한 네비게이터(성공한것만)
@@ -104,6 +121,7 @@ def file_processing():
 			if(len(lines)<8):
 				continue
 			url.append(lines)
+			url_list.append(lines)
 
 		for i in range(len(url)):
 			s_time=time.time() #크롤링 시작
@@ -113,8 +131,8 @@ def file_processing():
 			text = soup.get_text().replace("\n"," ")
 			p_time=time.time()-s_time #크롤링 끝
 			
-			#Calculate Total_Words (Including Stop Words)
-			total_words=len(text.split())
+			#Calculate Total_Words
+			total_words=len([i for i in text.split() if i not in stopwords.words('english')])
 			
 			#Create Index 
 			if es.indices.exists(index="ops_project"):
@@ -123,7 +141,7 @@ def file_processing():
 				es.indices.create(index="ops_project")
 	
 			#Doc & Check
-			doc={'url':url[i], 'text':text, 'total_words':total_words ,'processing_time':p_time}
+			doc={'url':url[i],'total_words': total_words, 'processing_time':p_time,'text':text }
 			es.indices.refresh(index="ops_project") #refresh 해줘야 바로 검색가능
 			res=[]
 			res=es.search(index="ops_project", body= {"query":{"match":{"url":url[i]}}} )
@@ -154,19 +172,17 @@ def file_processing():
 # Show TF-IDF Top 10
 @app.route('/tf_idf',methods= ['POST','GET'])
 def tf_idf():
-
+	# 변수설정
+	data_len=es.search(index="ops_project", body= {"query":{"match_all":{}}} )['hits']['total']
 		
-	url = []
+	global url_list  #url 셋
 	texts = []	
-	list_len = request.form['list_len']
-	for i in range(int(list_len)) :
-		lines=request.form[str(i)]
-		if(len(lines)<8):
-			continue
-		url.append(lines)
-
-	for i in range(len(url)):
-		page = requests.get(url[i])
+	list_len = data_len
+	
+	
+	# 텍스트셋 만들기
+	for i in range(len(url_list)):
+		page = requests.get(url_list[i])
 		soup = BeautifulSoup(page.content,'html.parser')
 
 		text = soup.get_text().replace("\n"," ")
@@ -174,12 +190,28 @@ def tf_idf():
 	
 
 	# 여기서부터 TF-IDF 계산
-	doc = []
+	#doc = []     #TF-IDF
+	top_10 =[]    
 
 	tf_v1 = TfidfVectorizer(stop_words='english') #sublinear_tf=True
 	tf_array=tf_v1.fit_transform(texts).toarray()
 	features=sorted(tf_v1.vocabulary_.items())
+	
+	# 단일문서 TF-IDF vector (해당 URL)
+	f_url = 'http://attic.apache.org/'
+	d_idx = url_list.index(f_url)
+	seq={} #매핑
+	for idx in range(len(tf_array[d_idx])) :
+		seq[idx]=tf_array[d_idx][idx]
+	#정렬
+	s_dict = sorted(seq.items(),key=op.itemgetter(1),reverse=True)
+	
+	#Vocab 추출
+	for i in range(10) :
+		top_10.append(features[s_dict[i][0]][0])
 
+	'''
+	#전체문서 TF-IDF vector
 	for j in range(len(texts)):
 		dic={}
 		seq={}
@@ -193,9 +225,12 @@ def tf_idf():
 			dic[features[s_dict[i][0]][0]]=s_dict[i][1]
 	
 		doc.append(dic)
-	
+	'''
 	# 여기서 TF-IDF끝
-	return render_template('index.html',doc=doc)
+
+	
+
+	return render_template('index.html', top_10=top_10)
 	
 
 
