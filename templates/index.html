@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Document</title>
+    <title>OPENSOURCE_FINAL_PROJECT</title>
 </head>
 
 <body>
@@ -13,22 +13,6 @@
         <form method="POST" action='/info'>
             <input name="name" type="text" size="25"><br />
             <input type='submit' name='submit' value='oneUrl'> </button>
-        </form>
-    </div>
-    <div>
-        {% for val in value %}
-        <li>{{val['_source']['url']}}</li>
-        <li>{{val['_source']['numWord']}}</li>
-        <li>{{val['_source']['time']}}</li>
-
-        <form action="/analyze" name="frm" method="POST">
-            <input type='hidden' name='hid' value={{val['_source']['url']}}>
-            <input type='submit' name='name' value='tfidf'>
-        </form>
-
-        <form action="/analyze" name="frm" method="POST">
-            <input type='hidden' name='hid' value={{val['_source']['url']}}>
-            <input type='submit' name='name' value='cosine'>
         </form>
     </div>
 </body>
