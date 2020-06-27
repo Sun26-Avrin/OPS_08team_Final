@@ -2,27 +2,71 @@
 <html>
     <head>
         <title>Test Index Html</title>
-        <script></script>
+        <link href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-beta.2/css/bootstrap.min.css"
+            rel="stylesheet">
+        <style>
+            .search{padding:30px;margin:30px;width:0 auto;height:150px;}
+            
+        </style>
     </head>
 
     <body>
-        <!--Single Form End-->
-        <div>
-            <form action="/insert" method="post">
-                <input type="text" name="single">
-                <input type="submit" value="enter">
-            </form>
+        <nav class="navbar navbar-expand navbar-dark bg-dark">
+            <div class="container">
+                <div class="navbar-header">
+                    <a class ="navbar-brand" href="/">Home</a>
+                </div>
+            </div>
+        </nav>
+        
+        <div class="jumbotron">
+            <div class="container"><h1 class="display-3">Welcome Here!</h1></div>
         </div>
-        <!--Single Form End-->
+        
         
         <!--File Upload Form Start-->
-        <div>
-        <form action="/file" method="post"
-                enctype="multipart/form-data">
-            <input type="file" name="group">
-            <input type="submit" value="Enter">
-        </form>
-        </div>
+        
+        
+        
+            <div class="row" align="center">
+                <div class="col-md-2">
+                </div>
+                
+                <div class="col-md-4" style="margin:30px; border:1px solid;">
+                    <div class="col-md-2">
+                        <form action="/insert" method="post" style="margin:0 auto;">
+                        <div style="border:1px solid;">
+                        <input type="text" name="single" size="25px" >
+                        </div>
+                        <input type="submit" value="Send" class="btn btn-primary btn-sm float-right" style="width:250px;">
+                    </form>
+                    </div>
+                </div>
+                
+                <div class="col-md-4" style="margin:30px;">
+            
+            
+                    <form action="/file" method="post"
+                        enctype="multipart/form-data" name="fileload">
+                        <label for="file-up">
+                            <img src="{{ url_for('static', filename='image/untitled2.png') }}"
+                                width="40" height="40"
+                            />
+                            <input type="file" id="file-up" name="group" style="display:none;" >
+                            
+                        </label>
+                    </form>
+                    <input type="button" value="Submit" class="btn btn-primary btn-sm" onclick="document.fileload.submit();">
+                    
+                </div>
+                <div class="col-md-2">
+                </div>
+            </div>
+        
+        
+        
+        
+        
         <p/>{{res}}
         <br>
         <p/>{{SOF}}
@@ -48,7 +92,7 @@
         {% endif %}
         <!-- File Processing End-->
         <br>
-        <!-- TF-IDF Top 10 -->
+        <!-- TF-IDF Top 10 Start-->
         <br>
         <p/>tf-idf 영역
         <p/>{{line}}
@@ -58,10 +102,20 @@
         <p/>{{doc}}
         <form action="/test2" name="frm2" method="post">
             <input type="hidden" name="hidden" value="hidden_value">
-            <input type="button" name="btn1" value="1234" onclick="document.frm2.submit();">
-            <input type="button" name="btn2" value="4567" onclick="document.frm2.submit();">
+            <input type="submit" name="btn1" value="1234" >
         </form>
-        <br>
+        <!-- TF-IDF Top 10 End-->
+        
+        <!-- Cosine Start-->
+        <div>
+        <form action="/test2" name="frm2" method="post">
+            <input type="hidden" name="hidden" value="hidden_value">
+            <input type="submit" name="btn1" value="1234" >
+        </form>
+        </div>
+        
+        <!-- Cosine Start-->
+        
         <p/>data 영역
         <p/>{{data}}
     </body>
