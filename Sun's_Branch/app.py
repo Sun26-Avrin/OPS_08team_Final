@@ -49,10 +49,11 @@ def insert():
 	s_time=time.time() #시간 시작
 	total_words=0 #전체 단어수
 	url = request.form['single']
-	url_list.append(url)
+	
 	page = requests.get(url)
 	soup = BeautifulSoup(page.content,'html.parser')
 	text = soup.get_text().replace("\n"," ")
+	url_list.append(url)
 	
 	p_time=time.time()-s_time #크롤링 끝	
 
@@ -150,20 +151,23 @@ def file_processing():
 			if((res['hits']['total'] == 0) or (res['hits']['hits'][0]['_source']['url']!=url[i])) :
 				es.index(index="ops_project",doc_type="string",id=id, body=doc)
 				id+=1
-				SOF_list[url]='성공!'
+				SOF_list[url[i]]='성공!'
 				es.indices.refresh(index="ops_project") #refresh
 				res=es.search(index="ops_project", body= {"query":{"match":{"_id":(id-1)}}})
 				navi_list.append(res)
 
 			else :
-				SOF_list[url]='중복!'
+				SOF_list[url[i]]='중복!'
 				es.indices.refresh(index="ops_project") #refresh	
 				
 			
 			
 		
-		
-		return render_template('index.html',id_list,navi)
+		es.indices.refresh(index="ops_project")
+		res=es.search(index="ops_project", body= {"query":{"match_all":{}}} )
+		value=res['hits']['hits']		
+
+		return render_template('index.html',value=value, SOFL=(SOF_list))
 
 			
  
@@ -228,9 +232,12 @@ def tf_idf():
 	'''
 	# 여기서 TF-IDF끝
 
+	es.indices.refresh(index="ops_project")
+	res=es.search(index="ops_project", body= {"query":{"match_all":{}}} )
+	value=res['hits']['hits']
 	
 
-	return render_template('index.html', top_10=top_10)
+	return render_template('index.html', value=value,top_10=top_10)
 	
 
 
