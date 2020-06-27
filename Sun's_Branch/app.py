@@ -17,8 +17,15 @@ from nltk.corpus import stopwords
 import nltk
 #nltk.download('stopwords')
 
+from sklearn.metrics.pairwise import cosine_similarity
+
+
 app = Flask(__name__)
 id=0
+
+#cos similarity
+def cos_sim(A,B):
+	return
 
 #누적 url
 url_list=[]
@@ -257,11 +264,62 @@ def test():
 		return render_template('index.html',line=lines,url=url,type2=type2,list_len=line_len)
 
 
-@app.route('/test2',methods= ['POST','GET'])
-def test2():
-	data = request.form
+# 코사인 유사도
+@app.route('/cos',methods= ['POST','GET'])
+def cos():
+
+	# 변수설정
+	global url_list  #url 셋
+	texts = []	
+	list_len = es.search(index="ops_project", body= {"query":{"match_all":{}}} )['hits']['total']
+	f_url = request.form['cos_url']
 	
-	return render_template('index.html',data=data)
+	# 텍스트셋 만들기
+	for i in range(len(url_list)):
+		page = requests.get(url_list[i])
+		soup = BeautifulSoup(page.content,'html.parser')
+
+		text = soup.get_text().replace("\n"," ")
+		texts.append(text)
+	
+
+	# 여기서부터 Cos 계산
+	#doc = []     #TF-IDF
+	top_3 =[]    
+
+	tf_v1 = TfidfVectorizer(stop_words='english') #sublinear_tf=True
+	tf_sparse=tf_v1.fit_transform(texts)
+	features=sorted(tf_v1.vocabulary_.items())
+	
+	# 단일문서 TF-IDF vector (해당 URL)
+	
+	cos = cosine_similarity(tf_sparse[url_list.index(f_url)],tf_sparse)
+	
+	# 문서매핑
+	cos_dic={}
+	for i in range(len(url_list)):
+		cos_dic[url_list[i]]=cos[0][i]
+	
+	# 문서 추출
+	cos_sorted = sorted(cos_dic.items(),key=op.itemgetter(1),reverse=True)
+	# top3
+	top_3.append(cos_sorted[0])
+	top_3.append(cos_sorted[1])
+	top_3.append(cos_sorted[2])
+	top_3.append(cos_sorted[3])
+
+	
+
+	
+	
+	# 여기서 Cos 끝
+
+	es.indices.refresh(index="ops_project")
+	res=es.search(index="ops_project", body= {"query":{"match_all":{}}} )
+	value=res['hits']['hits']
+	
+
+	return render_template('index.html', value=value, cos=cos, list_len=list_len, f_url=f_url,top_3=top_3)
 
 
 		

@@ -97,12 +97,12 @@
                     
                     <div style="clear:both;float:left;width:100%;">
                         <form style="float:right;" action="/tf_idf" method="post">
-                            <input type="hidden" value={{val['_source']['url']}}>
+                            <input type="hidden" name ="tf_url" value={{val['_source']['url']}}>
                             <input type="submit" value="TF-IDF" class="btn btn-warning btn-sm float-right" style="width:100px;margin:5px;">
                         </form>
-                        <form action = "/analyze" name ="frm" method = "POST"
+                        <form action = "/cos" name ="frm" method = "POST"
                             style="float:right;">
-                            <input type = 'hidden' name='hid' value={{val['_source']['url']}}>
+                            <input type = 'hidden' name='cos_url' value={{val['_source']['url']}}>
                             <input type = 'submit' name='Cosine' value='cosine' class="btn btn-warning btn-sm float-right" style="width:100px;margin:5px;">
                         </form>
                     </div>
@@ -140,33 +140,31 @@
         {% endif %}
         <!-- File Processing End-->
         <br>
+        
+        
         <!-- TF-IDF Top 10 Start-->
-        <br>
+        
         <p/>tf-idf 영역
         <p/>{{line}}
         <p/>{{url}}
         <p/>{{type2}}
-        <p/>{{list_len}}
+        
         <p/>{{doc}}
         <p/>{{top_10}}
-        <form action="/test2" name="frm2" method="post">
-            <input type="hidden" name="hidden" value="hidden_value">
-            <input type="submit" name="btn1" value="1234" >
-        </form>
-        <!-- TF-IDF Top 10 End-->
+        
         
         <!-- Cosine Start-->
-        <div>
-        <form action="/test2" name="frm2" method="post">
-            <input type="hidden" name="hidden" value="hidden_value">
-            <input type="submit" name="btn1" value="1234" >
-        </form>
-        </div>
+        <p/>cos 영역
+        <p/>{{cos}}
         
-        <!-- Cosine Start-->
+        <p/>cos_url : {{f_url}}
+        <p/>{{list_len}}
+        <p/>top3 : {{top_3}}
+        {% for i,j in top_3%}
+        <p/>{{i}}
+        <p/>{{j}}
+        {% endfor %}
         
-        <p/>data 영역
-        <p/>{{data}}
     </body>
 
 
