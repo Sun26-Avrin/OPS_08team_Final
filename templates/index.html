@@ -1,70 +1,70 @@
 <!DOCTYPE html>
 <html>
-    <head>
-        <title>Test Index Html</title>
-        <script></script>
-    </head>
 
-    <body>
-        <!--Single Form End-->
-        <div>
-            <form action="/insert" method="post">
-                <input type="text" name="single">
-                <input type="submit" value="enter">
-            </form>
-        </div>
-        <!--Single Form End-->
-        
-        <!--File Upload Form Start-->
-        <div>
-        <form action="/file" method="post"
-                enctype="multipart/form-data">
+<head>
+    <title>Test Index Html</title>
+    <script></script>
+</head>
+
+<body>
+    <!--Single Form End-->
+    <div>
+        <form action="/insert" method="post">
+            <input type="text" name="single">
+            <input type="submit" value="enter">
+        </form>
+    </div>
+    <!--Single Form End-->
+
+    <!--File Upload Form Start-->
+    <div>
+        <form action="/file" method="post" enctype="multipart/form-data">
             <input type="file" name="group">
             <input type="submit" value="Enter">
         </form>
-        </div>
-        <p/>{{res}}
-        <br>
-        <p/>{{SOF}}
-        <br>
-        <p/>{{url}}
-        <br>
-        <!--File Upload Form End-->
-        
-        <!-- File Processing Start -->
-        {% if GSOF == '1' %}
-        <p/>파일업로드 성공!
-        <br>
-        <p/>{{GSOF[0]}}
-        <form action="/file_processing" name="frm" method="post">
-            
-            {% for key,value in lines.items() %}
-            <input type="hidden" name={{key}} value={{value}}>
-            {% endfor %}
-            <input type="hidden" name="list_len" value={{list_len}}>
-        </form>
-        <script>document.frm.submit();</script>
-        
-        {% endif %}
-        <!-- File Processing End-->
-        <br>
-        <!-- TF-IDF Top 10 -->
-        <br>
-        <p/>tf-idf 영역
-        <p/>{{line}}
-        <p/>{{url}}
-        <p/>{{type2}}
-        <p/>{{list_len}}
-        <p/>{{doc}}
-        <form action="/test2" name="frm2" method="post">
-            <input type="hidden" name="hidden" value="hidden_value">
-            <input type="button" name="btn1" value="1234" onclick="document.frm2.submit();">
-            <input type="button" name="btn2" value="4567" onclick="document.frm2.submit();">
-        </form>
-        <br>
-        <p/>data 영역
-        <p/>{{data}}
-    </body>
+    </div>
+    <p />{{res}}
+    <br>
+    <p />{{SOF}}
+    <br>
+    <p />{{url}}
+    <br>
+    <!--File Upload Form End-->
+
+    <!-- File Processing Start -->
+    {% if GSOF == '1' %}
+    <p />파일업로드 성공!
+    <br>
+    <p />{{GSOF[0]}}
+    <form action="/file_processing" name="frm" method="post">
+
+        {% for key,value in lines.items() %}
+        <input type="hidden" name={{key}} value={{value}}>
+        {% endfor %}
+        <input type="hidden" name="list_len" value={{list_len}}>
+    </form>
+    <script>document.frm.submit();</script>
+
+    {% endif %}
+    <!-- File Processing End-->
+    <br>
+    <!-- TF-IDF Top 10 -->
+    <br>
+    <p />tf-idf 영역
+    <p />{{line}}
+    <p />{{url}}
+    <p />{{type2}}
+    <p />{{list_len}}
+    <p />{{doc}}
+    <form action="/test2" name="frm2" method="post">
+        <input type="hidden" name="hidden" value="hidden_value">
+        <input type="button" name="btn1" value="1234" onclick="document.frm2.submit();">
+        <input type="button" name="btn2" value="4567" onclick="document.frm2.submit();">
+    </form>
+    <br>
+    <p />data 영역
+    <p />{{data}}
+</body>
 
 
 </html>
