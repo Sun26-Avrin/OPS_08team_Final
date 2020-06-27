@@ -115,10 +115,6 @@ def info():
         list2 = list(word_count.values())
 
         
-        index_list = []
-        index_list = es.indices.get('*')
-        index_list = sorted(index_list,reverse=True)        
-        
         info={
                 "url":url1,
                 "word":list1,
@@ -148,9 +144,7 @@ def info2():
     word_list=[]
     vec_list=[]
     url_list=[]
-    url_list2=[]
     cos_res=[]
-    cos_res2=[]
 
     numWord=[]
     find_list=[]
@@ -171,7 +165,7 @@ def info2():
                     word_dict.update(doc['_source']['dict'])
                     word_list.append(doc['_source']['word'])
                     url_list.append(doc['_source']['url'])
-                    numWord.append(doc['_source']['numWord'])
+                   #numWord.append(doc['_source']['numWord'])
         
 
 
@@ -179,8 +173,9 @@ def info2():
         query={"query":{"bool":{"must":[{"match":{"url":url2}}]}}}
         docs=es.search(index='knu',body=query)
         find_list=docs['hits']['hits'][0]['_source']['word']
-
-        if request.form['Cosine']=='cosine':
+        
+        
+        if request.form['name']=='cosine':
 
             for i in range(count):
                 vec_list.append(make_vector(word_list[i],word_dict))
@@ -194,10 +189,10 @@ def info2():
                 dict_simil[url_list[i]]=cossimil
 
             cos_list = sorted(dict_simil.items(),key = lambda x:x[1],reverse=True)
-            return render_template('analyze.html',value2=cos_list[1:])
-        
+            return render_template('analyze.html',value2=cos_list[1:3])
+                
         #tf-idf
-        elif request.form['tf-idf']=='tfidf':
+        if request.form['name']=='tfidf':
 
             idf_d = compute_idf(word_list,count)
             tf_d = compute_tf(find_list)
@@ -207,11 +202,4 @@ def info2():
 
             word_list = sorted(tidf_dic.items(),key = lambda x:x[1],reverse=True)
             return render_template('analyze.html',value2=word_list[:10])
-
-
-
-
-
-if __name__ == '__main__' :
-	app.run(debug=True)
-
+        
