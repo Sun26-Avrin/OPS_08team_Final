@@ -1,0 +1,171 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>Test Index Html</title>
+        <link href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-beta.2/css/bootstrap.min.css"
+            rel="stylesheet">
+        <style>
+            .search{padding:30px;margin:30px;width:0 auto;height:150px;}
+            
+        </style>
+    </head>
+
+    <body>
+        <nav class="navbar navbar-expand navbar-dark bg-dark">
+            <div class="container">
+                <div class="navbar-header">
+                    <a class ="navbar-brand" href="/">Home</a>
+                </div>
+            </div>
+        </nav>
+        
+        <div class="jumbotron">
+            <div class="container"><h1 class="display-3">Welcome Here!</h1></div>
+        </div>
+        
+        
+        <!--File Upload Form Start-->
+        
+        
+        
+        <div class="row" align="center" style=" margin:30px;">
+                
+                
+            <div class="col-md-5" style="margin:0 auto; ">
+                
+                    <form action="/insert" method="post" name="singleURL"
+                        style="width:100%; height:100%;padding:15px;">
+                        <input type="text" name="single"
+                            style="width:60%;margin:0 auto;" >
+                
+                        <input type="button" value="Send"
+                            class="btn btn-primary btn-sm float-right"
+                            style="width:40%;margin:0 auto;"
+                            onclick="document.singleURL.submit();">
+                        <p style="margin-top:10px; background-color:#FA5858; color:white;"/>{{SOF}}
+                    </form>
+                    
+                    
+                    
+            </div>
+                
+            <div class="col-md-5" style="margin:0 auto;">
+            
+            
+                <form action="/file" method="post"
+                        enctype="multipart/form-data" name="fileload">
+                    <label for="file-up">
+                        <img src="{{ url_for('static', filename='image/untitled2.png') }}"
+                                width="40" height="40"/>
+                        <input type="file" id="file-up" name="group" style="display:none;" >
+                            
+                    </label>
+                </form>
+                <input type="button" value="Submit" class="btn btn-primary btn-sm" onclick="document.fileload.submit();">
+                    
+            </div>
+
+        </div>
+        <p style="margin-top:10px; background-color:#FA5858;
+        color:white;width:0 auto;text-align:center;
+        "/>{{SOFL}}
+        
+        
+        
+        
+        
+        <!-- Create List of URL-->
+        <div style="overflow:scroll; width:0 auto; height:300px;">
+            <!-- Start for-->
+            {% for val in value %}
+            <div class="container col-8 alert alert-info" style="float:left;margin-left:200px;" >
+                <div style="clear:both;">
+                    <div style="float:left;width:100%;">
+                        <div style="width:50%; float:left;">
+                            <p/>Site URL :
+                            <p/>Number Of Vocabularies :
+                            <p/>Processing Time :
+                        
+                        </div>
+                        
+                        <div style="width:50%; float:left;">
+                            <p/>{{val['_source']['url']}}
+                            <p/>{{val['_source']['total_words']}}
+                            <p/>{{val['_source']['processing_time']}}
+                        </div>
+                    </div>
+                    
+                    <div style="clear:both;float:left;width:100%;">
+                        <form style="float:right;" action="/tf_idf" method="post">
+                            <input type="hidden" name ="tf_url" value={{val['_source']['url']}}>
+                            <input type="submit" value="TF-IDF" class="btn btn-warning btn-sm float-right" style="width:100px;margin:5px;">
+                        </form>
+                        <form action = "/cos" name ="frm" method = "POST"
+                            style="float:right;">
+                            <input type = 'hidden' name='cos_url' value={{val['_source']['url']}}>
+                            <input type = 'submit' name='Cosine' value='cosine' class="btn btn-warning btn-sm float-right" style="width:100px;margin:5px;">
+                        </form>
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+            <!-- End for-->
+        </div>
+            <!-- Finish List of URL -->
+        
+        <div style="clear:both;"></div>
+        
+        <p/>{{res}}
+        <br>
+        <p/>
+        <br>
+        <p/>{{url}}
+        <br>
+        <!--File Upload Form End-->
+        
+        <!-- File Processing Start -->
+        {% if GSOF == '1' %}
+        <p/>파일업로드 성공!
+        <br>
+        <p/>{{GSOF[0]}}
+        <form action="/file_processing" name="frm" method="post">
+            
+            {% for key,value in lines.items() %}
+            <input type="hidden" name={{key}} value={{value}}>
+            {% endfor %}
+            <input type="hidden" name="list_len" value={{list_len}}>
+        </form>
+        <script>document.frm.submit();</script>
+        
+        {% endif %}
+        <!-- File Processing End-->
+        <br>
+        
+        
+        <!-- TF-IDF Top 10 Start-->
+        
+        <p/>tf-idf 영역
+        <p/>{{line}}
+        <p/>{{url}}
+        <p/>{{type2}}
+        
+        <p/>{{doc}}
+        <p/>{{top_10}}
+        
+        
+        <!-- Cosine Start-->
+        <p/>cos 영역
+        <p/>{{cos}}
+        
+        <p/>cos_url : {{f_url}}
+        <p/>{{list_len}}
+        <p/>top3 : {{top_3}}
+        {% for i,j in top_3%}
+        <p/>{{i}}
+        <p/>{{j}}
+        {% endfor %}
+        
+    </body>
+
+
+</html>
