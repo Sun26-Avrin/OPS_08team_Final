@@ -1,0 +1,68 @@
+<html>
+    <head>
+        <title>Top10 Vocabs as in TF-IDF!</title>
+        <link href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-beta.2/css/bootstrap.min.css"
+            rel="stylesheet">
+            </head>
+    
+    
+    
+    
+    
+    <body>
+        <nav class="navbar navbar-expand navbar-dark bg-dark">
+            <div class="container">
+                <div class="navbar-header">
+                    <a class ="navbar-brand" href="/">Home</a>
+                </div>
+            </div>
+        </nav>
+        
+        <div class="jumbotron">
+            <div class="container" >
+                <h1 class="display-3" style="text-align:center;">
+                    TF-IDF Zone</h1>
+                <h3 style="text-align:center;width:0 auto;margin-top:20px;">
+                    {{f_url}}</h3>
+            </div>
+        </div>
+        
+        {% if e_code == '1'%}
+        <p style="margin-top:10px; background-color:#FA5858;
+        color:white;width:0 auto;text-align:center;
+        "/>TF-IDF 값은 URL(문서)이 두개 이상일때부터 생성됩니다.<br>Home을 눌러 메인페이지로 돌아가세요.
+        {% else %}
+        <p style="margin-top:10px; background-color:#FA5858;
+        color:white;width:0 auto;text-align:center;
+        "/>해당 URL의 TF-IDF 값이 가장 높은 10개의 단어를 보여줍니다.
+        
+        <div class="container col-8 alert alert-info">
+            
+            {% for i in top_10%}
+            <li/>{{i}}
+            {% endfor %}
+        </div>
+        {% endif %}
+        
+        <div style="height:50px;"></div>
+        
+        
+        <footer class="container" style="text-align:right;" >
+            <p/>&copy; OPS_Programming Team-8
+            <li/>2012083011 유희선
+            <li/>2015113541 조승희
+            <li/>2017110553 김경현
+        </footer>
+        
+        
+    </body>
+    
+    
+    
+    
+    
+    
+    
+    
+    
+</html>
