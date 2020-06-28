@@ -19,6 +19,10 @@ import nltk
 
 from sklearn.metrics.pairwise import cosine_similarity
 
+#url check
+from urllib.request import urlopen
+from urllib.error import URLError, HTTPError
+
 
 app = Flask(__name__)
 id=0
@@ -39,11 +43,33 @@ else :
 	es.indices.create(index="ops_project")
 es.indices.delete(index='ops_project')  
 
+# url check function
+def url_check(url):
+	try:
+		res = urlopen(url)
+		return 1
+	except (HTTPError) :
+		#0 as false
+		return 0 
+	except URLError : 
+		return 0
+	except ValueError :
+		return 0
+	
+	
+
 @app.route('/')
 
 def index():
+	if es.indices.exists(index="ops_project"):
+		pass
+	else :
+		es.indices.create(index="ops_project")
+	es.indices.refresh(index="ops_project")
+	res=es.search(index="ops_project", body= {"query":{"match_all":{}}} )
+	value=res['hits']['hits']
 
-	return render_template('index.html')
+	return render_template('index.html',value=value)
 
 
 # Elastic에 데이터 단일 삽입
@@ -52,10 +78,21 @@ def insert():
 	#Calculate Time & Set Result
 	global id
 	global url_list
+
+
+	url = request.form['single']
+	if(not(url_check(url))) : #유효성검사
+		es.indices.refresh(index="ops_project")
+		res=es.search(index="ops_project", body= {"query":{"match_all":{}}} )
+		value=res['hits']['hits']
+		return render_template('index.html',SOF="URL is not valid",value=value)
+	 
+
+
 	SOF="" #삽입 성공 여부
 	s_time=time.time() #시간 시작
 	total_words=0 #전체 단어수
-	url = request.form['single']
+	
 	
 	page = requests.get(url)
 	soup = BeautifulSoup(page.content,'html.parser')
@@ -126,10 +163,14 @@ def file_processing():
 		list_len = request.form['list_len']
 		for i in range(int(list_len)) :
 			lines=request.form[str(i)]
-			if(len(lines)<8):
+			if(lines==''): #공백처리
+				continue
+			if(not(url_check(lines))) : #유효하지않은 URL
+				SOF_list[lines]="실패"
 				continue
 			url.append(lines)
 			url_list.append(lines)
+			SOF_list[lines]="성공"
 
 		for i in range(len(url)):
 			s_time=time.time() #크롤링 시작
@@ -158,13 +199,13 @@ def file_processing():
 			if((res['hits']['total'] == 0) or (res['hits']['hits'][0]['_source']['url']!=url[i])) :
 				es.index(index="ops_project",doc_type="string",id=id, body=doc)
 				id+=1
-				SOF_list[url[i]]='성공!'
+				SOF_list[url[i]]='성공'
 				es.indices.refresh(index="ops_project") #refresh
 				res=es.search(index="ops_project", body= {"query":{"match":{"_id":(id-1)}}})
 				navi_list.append(res)
 
 			else :
-				SOF_list[url[i]]='중복!'
+				SOF_list[url[i]]='중복'
 				es.indices.refresh(index="ops_project") #refresh	
 				
 			
@@ -185,10 +226,10 @@ def file_processing():
 def tf_idf():
 
 	global url_list
-
+	f_url = request.form['tf_url']
 	# Detect Error
 	if( len(url_list) <2 ) :
-		return render_template('tf_idf.html', e_code='1')
+		return render_template('tf_idf.html', e_code='1',f_url=f_url)
 	# 변수설정
 	data_len=es.search(index="ops_project", body= {"query":{"match_all":{}}} )['hits']['total']
 		
@@ -215,7 +256,7 @@ def tf_idf():
 	features=sorted(tf_v1.vocabulary_.items())
 	
 	# 단일문서 TF-IDF vector (해당 URL)
-	f_url = request.form['tf_url']
+	
 	d_idx = url_list.index(f_url)
 	seq={} #매핑
 	for idx in range(len(tf_array[d_idx])) :
@@ -277,12 +318,13 @@ def cos():
 
 	# 변수설정
 	global url_list  #url 셋
+	f_url = request.form['cos_url']
 	if( len(url_list) < 4 ) :
-		return render_template('cos.html',e_code='1')
+		return render_template('cos.html',e_code='1',f_url=f_url)
 
 	texts = []	
 	list_len = es.search(index="ops_project", body= {"query":{"match_all":{}}} )['hits']['total']
-	f_url = request.form['cos_url']
+	
 	
 	# 텍스트셋 만들기
 	for i in range(len(url_list)):
