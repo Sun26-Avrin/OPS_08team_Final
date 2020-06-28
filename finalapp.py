@@ -2,9 +2,7 @@
 import sys, requests,time,numpy,math
 from bs4 import BeautifulSoup
 from elasticsearch import Elasticsearch
-from flask import Flask
-from flask import render_template
-from flask import request
+from flask import Flask,render_template,request
 from nltk import word_tokenize
 app = Flask(__name__)
 
@@ -65,7 +63,6 @@ def compute_idf(word_list,count):
 
 @app.route('/')
 def helo_world():
-
     return render_template('final.html')
 
 @app.route('/info', methods=['GET','POST'])
@@ -73,7 +70,6 @@ def info():
     global count
     output_list=[]
     word_count={}
-
     start = time.time()
 
     error = None
@@ -84,8 +80,7 @@ def info():
         html = req.text
         soup = BeautifulSoup(html,'html.parser')
         my_para = soup.select('body > div')
-        
-
+    
         for para in my_para:
             content = para.getText().split()
 
@@ -106,15 +101,11 @@ def info():
 
         clock = time.time()-start
 
-
         list1 = list(word_count.keys())
         list2 = list(word_count.values())
-
-        
         index_list = []
         index_list = es.indices.get('*')
         index_list = sorted(index_list,reverse=True)        
-        
         info={
                 "url":url1,
                 "word":list1,
@@ -204,10 +195,5 @@ def info2():
             word_list = sorted(tidf_dic.items(),key = lambda x:x[1],reverse=True)
             return render_template('analyze.html',value2=word_list[:10])
 
-
-
-
-
 if __name__ == '__main__' :
 	app.run(debug=True)
-

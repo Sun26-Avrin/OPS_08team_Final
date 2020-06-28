@@ -1,10 +1,12 @@
 <html>
-	<head>
-		<title>Hello world!</title>
-	</head>
-	<body>
-		<div>
-			<p>
+
+<head>
+	<title>Hello world!</title>
+</head>
+
+<body>
+	<div>
+		<p>
 			Hello
 			{%for val in value %}
 			{%if (val!='word')and(val!='frequency')and(val!='dict')%}
@@ -12,15 +14,15 @@
 			{% endif %}
 			{% endfor %}
 
-			<form method = "POST" action = "/analyze">
-                   
-                        <input type = 'submit' name='tf-idf' value='tfidf'> </button>
-                        <input type = 'submit' name='Cosine' value='cosine'>  </button>
-			</FORM>
-			<button type ="submit" onclick="location.href='http://localhost:5000/'">Back to Home <br>
+		<form method="POST" action="/analyze">
+
+			<input type='submit' name='tf-idf' value='tfidf'> </button>
+			<input type='submit' name='Cosine' value='cosine'> </button>
+		</FORM>
+		<button type="submit" onclick="location.href='http://localhost:5000/'">Back to Home <br>
 
 			</p>
-		</div>
-	</body>
-</html>
+	</div>
+</body>
 
+</html>
