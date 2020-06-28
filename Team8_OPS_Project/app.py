@@ -117,7 +117,7 @@ def insert():
 	res=es.search(index="ops_project", body= {"query":{"match":{"url":url}}} )
 	
 	#Insert Into Elastic
-	if((res['hits']['total'] == 0) or (res['hits']['hits'][0]['_source']['url']!=url)) :
+	if((res['hits']['total']['value'] == 0) or (res['hits']['hits'][0]['_source']['url']!=url)) :
 		es.index(index="ops_project",doc_type="string",id=id, body=doc)
 		id+=1
 		SOF="Successfully Inserted!"
@@ -196,7 +196,7 @@ def file_processing():
 			res=es.search(index="ops_project", body= {"query":{"match":{"url":url[i]}}} )
 		
 			#Insert Into Elastic
-			if((res['hits']['total'] == 0) or (res['hits']['hits'][0]['_source']['url']!=url[i])) :
+			if((res['hits']['total']['value'] == 0) or (res['hits']['hits'][0]['_source']['url']!=url[i])) :
 				es.index(index="ops_project",doc_type="string",id=id, body=doc)
 				id+=1
 				SOF_list[url[i]]='성공'
