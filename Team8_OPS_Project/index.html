@@ -1,0 +1,175 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>Test Index Html</title>
+        <link href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-beta.2/css/bootstrap.min.css"
+            rel="stylesheet">
+        <script>
+            function FileCheck(){
+                var fileCheck= document.getElementById("file-up").value;
+                if(!fileCheck){
+                    alert("파일을 첨부해 주세요 ;D");
+                    return false;
+                }
+                //alert(fileCheck);
+                document.fileload.submit();
+            }
+        </script>
+    </head>
+
+    <body>
+        <nav class="navbar navbar-expand navbar-dark bg-dark">
+            <div class="container">
+                <div class="navbar-header">
+                    <a class ="navbar-brand" href="/">Home</a>
+                </div>
+            </div>
+        </nav>
+        
+        <div class="jumbotron">
+            <div class="container" ><h1 class="display-3" style="text-align:center;">
+                OPS Project</h1></div>
+            <h3 style="text-align:center;width:0 auto;margin-top:20px;">
+                Team 8</h3>
+            
+        </div>
+        
+        
+        <!--File Upload Form Start-->
+        
+        <p style="margin-top:10px; background-color:#CEECF5;
+        color:#424242;width:0 auto;text-align:center;
+        "/>URL 형식 : 프로토콜 + 도메인 + (경로)<br>업로드시 텍스트파일은 한줄단위로 URL을 작성해주세요.<br>형식이 일치하지 않으면 유효하지않은 URL로 간주합니다.
+        
+        <div class="row" align="center" style=" margin:30px;">
+                
+                
+            <div class="col-md-5" style="margin:0 auto; ">
+                
+                    <form action="/insert" method="post" name="singleURL"
+                        style="width:100%; height:100%;padding:15px;">
+                        <input type="text" id="s_url" name="single"
+                            style="width:60%;margin:0 auto;" >
+                
+                        <input type="button" value="Send"
+                            class="btn btn-primary btn-sm float-right"
+                            style="width:40%;margin:0 auto;"
+                            onclick="document.singleURL.submit();">
+                        <p style="margin-top:10px; background-color:#FA5858; color:white;"/>{{SOF}}
+                    </form>
+                    
+                    
+                    
+            </div>
+                
+            <div class="col-md-5" style="margin:0 auto;">
+            
+            
+                <form action="/file" method="post"
+                        enctype="multipart/form-data" name="fileload">
+                    <label for="file-up">
+                        <img src="{{ url_for('static', filename='image/untitled2.png') }}"
+                                width="40" height="40"/>
+                        <input type="file" id="file-up" name="group" style="display:none;" >
+                            
+                    </label>
+                </form>
+                <input type="button" value="Submit" class="btn btn-primary btn-sm"
+                    onclick="FileCheck();">
+                    
+            </div>
+
+        </div>
+        <p style="margin-top:10px; background-color:#FA5858;
+        color:white;width:0 auto;text-align:center;
+        "/>{{SOFL}}
+        
+        
+        
+        
+        
+        <!-- Create List of URL-->
+        <div style="overflow:scroll; width:0 auto; height:300px;">
+            <!-- Start for-->
+            {% for val in value %}
+            <div class="container col-8 alert alert-info" style="float:left;margin-left:200px;" >
+                <div style="clear:both;">
+                    <div style="float:left;width:100%;">
+                        <div style="width:50%; float:left;">
+                            <p/>Site URL :
+                            <p/>Number Of Vocabularies :
+                            <p/>Processing Time :
+                        
+                        </div>
+                        
+                        <div style="width:50%; float:left;">
+                            <p/>{{val['_source']['url']}}
+                            <p/>{{val['_source']['total_words']}}
+                            <p/>{{val['_source']['processing_time']}}
+                        </div>
+                    </div>
+                    
+                    <div style="clear:both;float:left;width:100%;">
+                        <form style="float:right;" action="/tf_idf" method="post">
+                            <input type="hidden" name ="tf_url" value={{val['_source']['url']}}>
+                            <input type="submit" value="TF-IDF" class="btn btn-warning btn-sm float-right" style="width:100px;margin:5px;"
+                                formtarget="_blank"
+                                >
+                        </form>
+                        <form action = "/cos" name ="frm" method = "POST"
+                            style="float:right;">
+                            <input type = 'hidden' name='cos_url' value={{val['_source']['url']}}>
+                            <input type = 'submit' name='Cosine' value='cosine' class="btn btn-warning btn-sm float-right" style="width:100px;margin:5px;"
+                                formtarget="_blank"
+                                >
+                        </form>
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+            <!-- End for-->
+        </div>
+            <!-- Finish List of URL -->
+        
+        <div style="clear:both;"></div>
+        
+        <p/>{{res}}
+        <br>
+        <p/>
+        <br>
+        <p/>{{url}}
+        <br>
+        <!--File Upload Form End-->
+        
+        <!-- File Processing Start -->
+        {% if GSOF == '1' %}
+        <p/>파일업로드 성공!
+        <br>
+        <p/>{{GSOF[0]}}
+        <form action="/file_processing" name="frm" method="post">
+            
+            {% for key,value in lines.items() %}
+            <input type="hidden" name={{key}} value={{value}}>
+            {% endfor %}
+            <input type="hidden" name="list_len" value={{list_len}}>
+        </form>
+        <script>document.frm.submit();</script>
+        
+        {% endif %}
+        <!-- File Processing End-->
+        <br>
+        
+        
+        
+        
+        
+        <footer class="container" style="text-align:right;" >
+            <p/>&copy; OPS_Programming Team-8
+            <li/>2012083011 유희선
+            <li/>2015113541 조승희
+            <li/>2017110553 김경현
+        </footer>
+    </body>
+
+
+</html>
