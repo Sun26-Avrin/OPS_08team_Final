@@ -24,7 +24,7 @@ sudo pip install scikit-learn  #sklearn 설치
 sleep 5
 #./bin/elasticsearch -d #엘라스틱서치가 현재폴더에 있다고 가정
 # 엘라스틱 서치 대기...
-echo echo 'we are waiting till 20sec..'
+echo "we're waiting until ElasticSearch is on board for 20 sec"
 
 i=1
 
@@ -34,7 +34,8 @@ do
         i=$(($i+1))
         sleep 1
 done
-echo "we're waiting until ElasticSearch is on board."
+
+echo "finish waiting for ElasticSearch!"
 
 # 서버 실행
 echo "executing server...!"
