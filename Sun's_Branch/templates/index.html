@@ -4,10 +4,17 @@
         <title>Test Index Html</title>
         <link href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-beta.2/css/bootstrap.min.css"
             rel="stylesheet">
-        <style>
-            .search{padding:30px;margin:30px;width:0 auto;height:150px;}
-            
-        </style>
+        <script>
+            function FileCheck(){
+                var fileCheck= document.getElementById("file-up").value;
+                if(!fileCheck){
+                    alert("파일을 첨부해 주세요 ;D");
+                    return false;
+                }
+                //alert(fileCheck);
+                document.fileload.submit();
+            }
+        </script>
     </head>
 
     <body>
@@ -62,7 +69,8 @@
                             
                     </label>
                 </form>
-                <input type="button" value="Submit" class="btn btn-primary btn-sm" onclick="document.fileload.submit();">
+                <input type="button" value="Submit" class="btn btn-primary btn-sm"
+                    onclick="FileCheck();">
                     
             </div>
 

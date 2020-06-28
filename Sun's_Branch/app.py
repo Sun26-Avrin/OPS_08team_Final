@@ -183,10 +183,16 @@ def file_processing():
 # Show TF-IDF Top 10
 @app.route('/tf_idf',methods= ['POST','GET'])
 def tf_idf():
+
+	global url_list
+
+	# Detect Error
+	if( len(url_list) <2 ) :
+		return render_template('tf_idf.html', e_code='1')
 	# 변수설정
 	data_len=es.search(index="ops_project", body= {"query":{"match_all":{}}} )['hits']['total']
 		
-	global url_list  #url 셋
+	
 	texts = []	
 	list_len = data_len
 	
@@ -245,7 +251,7 @@ def tf_idf():
 	value=res['hits']['hits']
 	
 
-	return render_template('tf_idf.html', top_10=top_10, f_url=f_url )
+	return render_template('tf_idf.html', top_10=top_10, f_url=f_url , e_code=0 )
 	
 
 
@@ -271,6 +277,9 @@ def cos():
 
 	# 변수설정
 	global url_list  #url 셋
+	if( len(url_list) < 4 ) :
+		return render_template('cos.html',e_code='1')
+
 	texts = []	
 	list_len = es.search(index="ops_project", body= {"query":{"match_all":{}}} )['hits']['total']
 	f_url = request.form['cos_url']
@@ -320,7 +329,7 @@ def cos():
 	value=res['hits']['hits']
 	
 
-	return render_template('cos.html', cos=cos, f_url=f_url, top_3=top_3)
+	return render_template('cos.html', cos=cos, f_url=f_url, top_3=top_3,e_code='0')
 
 
 		

@@ -27,10 +27,14 @@
             </div>
         </div>
         
+        {% if e_code == '1'%}
+        <p style="margin-top:10px; background-color:#FA5858;
+        color:white;width:0 auto;text-align:center;
+        "/>TF-IDF 값은 URL(문서)이 두개 이상일때부터 생성됩니다. Home을 눌러 메인페이지로 돌아가세요.
+        {% else %}
         <p style="margin-top:10px; background-color:#FA5858;
         color:white;width:0 auto;text-align:center;
         "/>해당 URL의 TF-IDF 값이 가장 높은 10개의 단어를 보여줍니다.
-        
         
         <div class="container col-8 alert alert-info">
             
@@ -38,6 +42,9 @@
             <li/>{{i}}
             {% endfor %}
         </div>
+        {% endif %}
+        
+        
         
         
         <br><br>
