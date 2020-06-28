@@ -1,9 +1,5 @@
 #!/usr/bin/python
-import sys
-import requests
-import time
-import numpy
-import math
+import sys, requests,time,numpy,math
 from bs4 import BeautifulSoup
 from elasticsearch import Elasticsearch
 from flask import Flask
