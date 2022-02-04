@@ -1,5 +1,6 @@
 ## OPS_08team_Final
-+ Flask, ElasticSearch
+### 사용스택
++ Flask, ElasticSearch, Linux Shell Script, BootStrap, JSP, HTML, CSS
 ---
 
 ### 실행방법
